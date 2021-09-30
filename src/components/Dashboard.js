@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import notiSound from "../assets/notification.mp3";
+import doneSound from "../assets/finished.mp3";
 // import classes from "./Dashboard.module.css";
 
 export const Dashboard = (props) => {
@@ -59,16 +61,22 @@ export const Dashboard = (props) => {
     props.setFormStatus(true);
   };
 
+  const playAudio = (file) => {
+    const audio = new Audio(file);
+    audio.play();
+  };
+
   // logic for incrementing the timer and rounds
   useEffect(() => {
     const timer = setInterval(() => {
       if (!pauseStatus) {
         // last round case
         if (props.currentRound >= props.rounds) {
-          // do not go to break on final round
-          if (breakStatus || props.workTime <= 0) {
+          // final round skips break
+          if (props.workTime <= 0) {
             props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
             setFinishedStatus(true);
+            playAudio(doneSound);
           } else {
             props.setTimer([
               props.workTime - 1,
@@ -82,6 +90,7 @@ export const Dashboard = (props) => {
           if (!breakStatus) {
             if (props.workTime <= 0) {
               setBreakStatus(true);
+              playAudio(notiSound);
               props.setTimer([
                 initWorkTime,
                 initBreakTime,
@@ -99,6 +108,7 @@ export const Dashboard = (props) => {
           } else {
             if (props.breakTime <= 0) {
               setBreakStatus(false);
+              playAudio(notiSound);
               props.setTimer([
                 initWorkTime,
                 initBreakTime,
