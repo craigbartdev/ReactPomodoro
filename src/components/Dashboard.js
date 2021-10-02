@@ -13,6 +13,7 @@ export const Dashboard = (props) => {
   const initBreakTimeRef = useRef(props.breakTime);
   const initWorkTime = initWorkTimeRef.current;
   const initBreakTime = initBreakTimeRef.current;
+  // format times in minute format
   const displayWorkTime = new Date(props.workTime * 1000)
     .toISOString()
     .substr(14, 5);
@@ -20,14 +21,17 @@ export const Dashboard = (props) => {
     .toISOString()
     .substr(14, 5);
 
-  // set browser title depending on state
+  // set browser title and header depending on state
   if (finishedStatus) {
-      document.title = "Done"
+      document.title = "Done";
+      props.setHeader("Done");
   } else {
       if (breakStatus) {
         document.title = (displayBreakTime + " Break");
+        props.setHeader("Break");
       } else {
         document.title = (displayWorkTime + " Work");
+        props.setHeader("Work");
       }
   }
 
@@ -52,13 +56,9 @@ export const Dashboard = (props) => {
     if (!breakStatus) {
       if (props.currentRound < props.rounds) {
         setBreakStatus(true);
-        props.setHeader("Break");
-        document.title = displayBreakTime;
       } else {
         props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
         setFinishedStatus(true);
-        props.setHeader("Done");
-        document.title = "Done";
       }
     } else {
       props.setTimer([
@@ -68,15 +68,12 @@ export const Dashboard = (props) => {
         props.currentRound + 1,
       ]);
       setBreakStatus(false);
-      props.setHeader("Work");
-      document.title = displayWorkTime;
     }
   };
 
   const exitTimer = () => {
     props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
     props.setFormStatus(true);
-    props.setHeader("Get Started");
   };
 
   const playAudio = (file) => {
@@ -95,7 +92,6 @@ export const Dashboard = (props) => {
             props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
             setFinishedStatus(true);
             playAudio(doneSound);
-            props.setHeader("Done");
           } else {
             props.setTimer([
               props.workTime - 1,
@@ -109,7 +105,6 @@ export const Dashboard = (props) => {
           if (!breakStatus) {
             if (props.workTime <= 0) {
               setBreakStatus(true);
-              props.setHeader("Break");
               playAudio(notiSound);
               props.setTimer([
                 initWorkTime,
@@ -128,7 +123,6 @@ export const Dashboard = (props) => {
           } else {
             if (props.breakTime <= 0) {
               setBreakStatus(false);
-              props.setHeader("Work")
               playAudio(notiSound);
               props.setTimer([
                 initWorkTime,
