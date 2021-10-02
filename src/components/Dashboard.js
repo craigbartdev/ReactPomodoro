@@ -20,6 +20,17 @@ export const Dashboard = (props) => {
     .toISOString()
     .substr(14, 5);
 
+  // set browser title depending on state
+  if (finishedStatus) {
+      document.title = "Done"
+  } else {
+      if (breakStatus) {
+        document.title = (displayBreakTime + " Break");
+      } else {
+        document.title = (displayWorkTime + " Work");
+      }
+  }
+
   const togglePause = () => {
     if (pauseStatus) {
       setPauseStatus(false);
@@ -41,9 +52,13 @@ export const Dashboard = (props) => {
     if (!breakStatus) {
       if (props.currentRound < props.rounds) {
         setBreakStatus(true);
+        props.setHeader("Break");
+        document.title = displayBreakTime;
       } else {
         props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
         setFinishedStatus(true);
+        props.setHeader("Done");
+        document.title = "Done";
       }
     } else {
       props.setTimer([
@@ -53,12 +68,15 @@ export const Dashboard = (props) => {
         props.currentRound + 1,
       ]);
       setBreakStatus(false);
+      props.setHeader("Work");
+      document.title = displayWorkTime;
     }
   };
 
   const exitTimer = () => {
     props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
     props.setFormStatus(true);
+    props.setHeader("Get Started");
   };
 
   const playAudio = (file) => {
@@ -69,7 +87,7 @@ export const Dashboard = (props) => {
   // logic for incrementing the timer and rounds
   useEffect(() => {
     const timer = setInterval(() => {
-      if (!pauseStatus) {
+      if (!pauseStatus && !finishedStatus) {
         // last round case
         if (props.currentRound >= props.rounds) {
           // final round skips break
@@ -77,6 +95,7 @@ export const Dashboard = (props) => {
             props.setTimer([initWorkTime, initBreakTime, props.rounds, 1]);
             setFinishedStatus(true);
             playAudio(doneSound);
+            props.setHeader("Done");
           } else {
             props.setTimer([
               props.workTime - 1,
@@ -90,6 +109,7 @@ export const Dashboard = (props) => {
           if (!breakStatus) {
             if (props.workTime <= 0) {
               setBreakStatus(true);
+              props.setHeader("Break");
               playAudio(notiSound);
               props.setTimer([
                 initWorkTime,
@@ -108,6 +128,7 @@ export const Dashboard = (props) => {
           } else {
             if (props.breakTime <= 0) {
               setBreakStatus(false);
+              props.setHeader("Work")
               playAudio(notiSound);
               props.setTimer([
                 initWorkTime,
@@ -128,23 +149,16 @@ export const Dashboard = (props) => {
       }
     }, 1000);
     return () => clearInterval(timer);
-  }, [props, breakStatus, initWorkTime, initBreakTime, pauseStatus]);
+  }, [props, breakStatus, initWorkTime, initBreakTime, pauseStatus, finishedStatus]);
 
   return (
     <section>
       {finishedStatus ? (
         <div>
-          <h1>Session Finished</h1>
           <button onClick={exitTimer}>Home</button>
         </div>
       ) : (
         <div>
-          <h2>{breakStatus ? "Break" : "Work"}</h2>
-          <h3>
-            Work Time: {initWorkTime / 60} minutes <br />
-            Break Time: {initBreakTime / 60} minutes <br />
-            Rounds: {props.currentRound}/{props.rounds}
-          </h3>
           <h1>{breakStatus ? displayBreakTime : displayWorkTime}</h1>
           <button onClick={resetTime}>Reset</button>
           <button onClick={togglePause}>
@@ -152,6 +166,11 @@ export const Dashboard = (props) => {
           </button>
           <button onClick={nextTime}>Next</button>
           <button onClick={exitTimer}>Exit</button>
+          <h3>
+            Work Time: {initWorkTime / 60} minutes <br />
+            Break Time: {initBreakTime / 60} minutes <br />
+            Rounds: {props.currentRound}/{props.rounds}
+          </h3>
         </div>
       )}
     </section>

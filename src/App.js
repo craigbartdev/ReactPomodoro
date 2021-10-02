@@ -6,6 +6,7 @@ import { Dashboard } from "./components/Dashboard";
 
 function App() {
   const [formStatus, setFormStatus] = useState(true);
+  const [header, setHeader] = useState("Work");
   const [[workTime, breakTime, rounds, currentRound], setTimer] = useState([
     25 * 60,
     5 * 60,
@@ -17,11 +18,12 @@ function App() {
   const initTimer = (workT, breakT, roundsN) => {
     setTimer([workT, breakT, roundsN, 1]);
     setFormStatus(false);
+    setHeader("Work");
   };
 
   return (
-    <div className="app">
-      <Header form={formStatus} />
+    <div>
+      <Header formStatus={formStatus} header={header}/>
       {formStatus ? (
         <Form
           initTimer={initTimer}
@@ -37,6 +39,7 @@ function App() {
           currentRound={currentRound}
           setTimer={setTimer}
           setFormStatus={setFormStatus}
+          setHeader={setHeader}
         />
       )}
     </div>

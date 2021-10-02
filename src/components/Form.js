@@ -5,6 +5,8 @@ export const Form = (props) => {
   const breakTimeRef = useRef();
   const roundsRef = useRef();
 
+  document.title = "Green Tomato";
+
   const toggleFormHandler = (e) => {
     e.preventDefault();
 
@@ -18,7 +20,7 @@ export const Form = (props) => {
   return (
     <form onSubmit={toggleFormHandler}>
       <div>
-        <label htmlFor="workTime">Work Time: </label>
+        <label htmlFor="workTime">Work Time (minutes): </label>
         <input
           required
           type="number"
@@ -32,7 +34,7 @@ export const Form = (props) => {
         />
       </div>
       <div>
-        <label htmlFor="breakTime">Break Time: </label>
+        <label htmlFor="breakTime">Break Time (minutes): </label>
         <input
           required
           type="number"
@@ -59,6 +61,7 @@ export const Form = (props) => {
           ref={roundsRef}
         />
       </div>
+      <br />
       <div>
         <button>Start</button>
       </div>
