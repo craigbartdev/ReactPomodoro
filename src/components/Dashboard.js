@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import notiSound from "../assets/notification.mp3";
 import doneSound from "../assets/finished.mp3";
-// import classes from "./Dashboard.module.css";
 
 export const Dashboard = (props) => {
   const [pauseStatus, setPauseStatus] = useState(false);
